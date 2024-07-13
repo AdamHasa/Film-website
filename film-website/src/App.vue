@@ -1,47 +1,40 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
   <main>
-    <TheWelcome />
+    <div v-if="movie">
+      <h1>{{ movie.title }}</h1>
+      <p>{{ movie.overview }}</p>
+      <img :src= "base_url + movie.poster_path" alt="Movie Poster">
+    </div>
+    <div v-else>
+      Loading...
+    </div>
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script>
+export default {
+  data() {
+    return {
+      movie: null,
+      base_url: "https://image.tmdb.org/t/p/original"
+    };
+  },
+  mounted() {
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMzQ4YTE4ZWU4Y2Q0MTk4ZTA0NTNiMzkyYTNhYjg4YSIsIm5iZiI6MTcyMDc4MjEzOC44MTg5NTYsInN1YiI6IjY2MTA2MTZiMzU2YTcxMDE2NDIyZTM1NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4QIkL3_oJyhKOEsmXUfLsWOn57jAnCWsuBvIKVUM1Y'
+      }
+    };
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    fetch('https://api.themoviedb.org/3/movie/630?language=en-US', options)
+      .then(response => response.json())
+      .then(data => {
+        this.movie = data;
+      })
+      .catch(err => console.error(err));
   }
+};
+</script>
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
