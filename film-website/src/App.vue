@@ -31,12 +31,13 @@ export default {
   data() {
     return {
       movie: null,
-      base_url: "https://image.tmdb.org/t/p/original"
+      base_url: "https://image.tmdb.org/t/p/original",
+      total_pages: null
     };
   },
   mounted() {
     const movieEndpoints = [
-      { name: 'Dutch movie', description: "a dutch movie", endpoint: 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=vote_count.asc&vote_count.gte=100&with_origin_country=NL' },
+      { name: 'Dutch movie', description: "a dutch movie", endpoint: 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&sort_by=vote_count.asc&vote_count.gte=100&with_origin_country=NL' },
     ];
 
     const options = {
@@ -47,14 +48,27 @@ export default {
       }
     };
 
-    fetch(movieEndpoints[0].endpoint, options)
+    fetch(movieEndpoints[0].endpoint + '&page=1', options)
       .then(response => response.json())
       .then(data => {
-        if (data.results && data.results.length > 0) {
-          const randomIndex = Math.floor(Math.random() * data.results.length);
-          this.movie = data.results[randomIndex];
+        if (data.total_pages && data.total_pages > 0) {
+          this.total_pages = data.total_pages;
+
+          const randomPage = Math.floor(Math.random() * this.total_pages) + 1;
+
+          fetch(movieEndpoints[0].endpoint + `&page=${randomPage}`, options)
+            .then(response => response.json())
+            .then(data => {
+              if (data.results && data.results.length > 0) {
+                const randomIndex = Math.floor(Math.random() * data.results.length);
+                this.movie = data.results[randomIndex];
+              } else {
+                console.error('No movies found on the selected page');
+              }
+            })
+            .catch(err => console.error(err));
         } else {
-          console.error('No movies found');
+          console.error('No pages found');
         }
       })
       .catch(err => console.error(err));
