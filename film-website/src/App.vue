@@ -26,7 +26,7 @@ export default {
       { name: 'Hidden gem', description: 'A movie with less than 500 reviews but higher that 8 average vote', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_average.gte=8&vote_count.gte=50&vote_count.lte=500'},
       { name: 'This year', description: 'a movie that was released this year', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&primary_release_year=' + new Date().getFullYear()},
       { name: 'Before the 80s', desctiption: 'A movie that was released before 1980', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&release_date.lte=1980-01-01&sort_by=popularity.desc&vote_count.gte=50'},
-      { name: 'Short movie', desctiption: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&page=1&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
+      { name: 'Short movie', desctiption: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
     ];
 
     const options = {
@@ -53,10 +53,13 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (data.total_pages && data.total_pages > 0) {
-            const randomPage = Math.floor(Math.random() * data.total_pages) + 1;
+            // cap pages tmdb api doesn't accept past page 500
+            const maxPages = Math.min(data.total_pages, 500);
+            const randomPage = Math.floor(Math.random() * maxPages) + 1;
             return fetch(endpoint.endpoint + `&page=${randomPage}`, options)
               .then(response => response.json())
               .then(data => {
+                console.log(data)
                 if (data.results && data.results.length > 0) {
                   const randomIndex = Math.floor(Math.random() * data.results.length);
                   return data.results[randomIndex];
