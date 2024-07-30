@@ -1,6 +1,8 @@
 <template>
   <main class="main-container">
     <div v-for="(movie, index) in movies" :key="index" class="movie-container">
+      <h2 class="endpoint-name">{{ movie.endpointName }}</h2>
+      <p>{{ movie.endpointDescription }}</p>
       <h1>{{ movie.title }}</h1>
       <img :src="base_url + movie.poster_path" alt="Movie Poster" class="movie-poster">
       <p>{{ movie.overview }}</p>
@@ -24,9 +26,9 @@ export default {
     const movieEndpoints = [
       { name: 'Dutch movie', description: 'A dutch movie', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=vote_count.asc&vote_count.gte=50&with_origin_country=NL' },
       { name: 'Hidden gem', description: 'A movie with less than 500 reviews but higher that 8 average vote', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_average.gte=8&vote_count.gte=50&vote_count.lte=500'},
-      { name: 'This year', description: 'a movie that was released this year', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&primary_release_year=' + new Date().getFullYear()},
-      { name: 'Before the 80s', desctiption: 'A movie that was released before 1980', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&release_date.lte=1980-01-01&sort_by=popularity.desc&vote_count.gte=50'},
-      { name: 'Short movie', desctiption: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
+      { name: 'This year', description: 'A movie that was released this year', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&primary_release_year=' + new Date().getFullYear()},
+      { name: 'Before the 80s', description: 'A movie that was released before 1980', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&release_date.lte=1980-01-01&sort_by=popularity.desc&vote_count.gte=50'},
+      { name: 'Short movie', description: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
     ];
 
     const options = {
@@ -62,7 +64,10 @@ export default {
                 console.log(data)
                 if (data.results && data.results.length > 0) {
                   const randomIndex = Math.floor(Math.random() * data.results.length);
-                  return data.results[randomIndex];
+                  const movie = data.results[randomIndex];
+                  movie.endpointName = endpoint.name;  
+                  movie.endpointDescription = endpoint.description
+                  return movie;
                 } else {
                   console.error('No movies found on the selected page');
                   return null;
@@ -119,5 +124,11 @@ p {
   font-size: 16px;
   max-width: 800px;
   margin-bottom: 20px;
+}
+.endpoint-name {
+  color: yellow; 
+  font-weight: bold; 
+  font-size: 20px; 
+  margin-bottom: 10px; 
 }
 </style>
