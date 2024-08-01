@@ -1,16 +1,7 @@
 <template>
-  <main class="main-container">
-    <div v-for="(movie, index) in movies" :key="index" class="movie-container">
-      <h2 class="endpoint-name">{{ movie.endpointName }}</h2>
-      <p>{{ movie.endpointDescription }}</p>
-      <h1>{{ movie.title }}</h1>
-      <img :src="base_url + movie.poster_path" alt="Movie Poster" class="movie-poster">
-      <p>{{ movie.overview }}</p>
-    </div>
-    <div v-if="loading" class="loading">
-      Loading...
-    </div>
-  </main>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
@@ -31,13 +22,6 @@ export default {
       { name: 'Short movie', description: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
     ];
 
-    const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMzQ4YTE4ZWU4Y2Q0MTk4ZTA0NTNiMzkyYTNhYjg4YSIsIm5iZiI6MTcyMTA0Mjc1Ny43OTgyMzcsInN1YiI6IjY2MTA2MTZiMzU2YTcxMDE2NDIyZTM1NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GzGP9aF6X2r6dEhD6Ky8A7--HJ39keYIfRyXUKFHAjs'
-      }
-    };
 
     const selectedEndpoints = [];
     while (selectedEndpoints.length < 4) {
@@ -90,45 +74,6 @@ export default {
   },
 };
 </script>
-
 <style>
-.main-container {
-  display: flex;
-  flex-wrap: wrap; 
-  justify-content: space-around; 
-  padding: 20px;
-}
-
-.movie-container {
-  flex: 0 1 22%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.movie-poster {
-  width: 300px;
-  height: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-p {
-  font-size: 16px;
-  max-width: 800px;
-  margin-bottom: 20px;
-}
-.endpoint-name {
-  color: yellow; 
-  font-weight: bold; 
-  font-size: 20px; 
-  margin-bottom: 10px; 
-}
+/* Global styles */
 </style>
