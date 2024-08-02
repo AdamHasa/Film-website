@@ -5,6 +5,7 @@
   </template>
   
   <script>
+  import { getRandomMovies, BASE_IMAGE_URL } from '@/services/api';
   import MovieList from '@/components/MovieList.vue';
   
   export default {
@@ -14,69 +15,19 @@
     data() {
       return {
         movies: [],
-        base_url: "https://image.tmdb.org/t/p/original",
+        base_url: BASE_IMAGE_URL,
         loading: true
       };
     },
     mounted() {
-      // Fetch movies as in your current script, populate `this.movies` and set `this.loading` to false
-      // For example:
-      const movieEndpoints = [
-      { name: 'Dutch movie', description: 'A dutch movie', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=vote_count.asc&vote_count.gte=50&with_origin_country=NL' },
-      { name: 'Hidden gem', description: 'A movie with less than 500 reviews but higher that 8 average vote', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_average.gte=8&vote_count.gte=50&vote_count.lte=500'},
-      { name: 'This year', description: 'A movie that was released this year', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&primary_release_year=' + new Date().getFullYear()},
-      { name: 'Before the 80s', description: 'A movie that was released before 1980', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&release_date.lte=1980-01-01&sort_by=popularity.desc&vote_count.gte=50'},
-      { name: 'Short movie', description: 'A movie less than 100 minutes', endpoint: 'https://api.themoviedb.org/3/discover/movie?language=en-US&sort_by=popularity.desc&vote_count.gte=50&with_runtime.lte=100'}
-      ];
-  
-      const options = {
-      method: 'GET',
-      headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMzQ4YTE4ZWU4Y2Q0MTk4ZTA0NTNiMzkyYTNhYjg4YSIsIm5iZiI6MTcyMTA0Mjc1Ny43OTgyMzcsInN1YiI6IjY2MTA2MTZiMzU2YTcxMDE2NDIyZTM1NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GzGP9aF6X2r6dEhD6Ky8A7--HJ39keYIfRyXUKFHAjs'
-      }
-    };
-  
-      const selectedEndpoints = [];
-      while (selectedEndpoints.length < 4) {
-        const randomIndex = Math.floor(Math.random() * movieEndpoints.length);
-        const selectedEndpoint = movieEndpoints[randomIndex];
-        if (!selectedEndpoints.includes(selectedEndpoint)) {
-          selectedEndpoints.push(selectedEndpoint);
-        }
-      }
-  
-      Promise.all(selectedEndpoints.map(endpoint =>
-        fetch(endpoint.endpoint + '&page=1', options)
-          .then(response => response.json())
-          .then(data => {
-            if (data.total_pages && data.total_pages > 0) {
-              const maxPages = Math.min(data.total_pages, 500);
-              const randomPage = Math.floor(Math.random() * maxPages) + 1;
-              return fetch(endpoint.endpoint + `&page=${randomPage}`, options)
-                .then(response => response.json())
-                .then(data => {
-                  if (data.results && data.results.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * data.results.length);
-                    const movie = data.results[randomIndex];
-                    movie.endpointName = endpoint.name;
-                    movie.endpointDescription = endpoint.description;
-                    return movie;
-                  }
-                  return null;
-                });
-            }
-            return null;
-          })
-      ))
-      .then(results => {
-        this.movies = results.filter(movie => movie !== null);
+      this.fetchMovies();
+    },
+    methods: {
+      async fetchMovies() {
+        this.loading = true;
+        this.movies = await getRandomMovies();
         this.loading = false;
-      })
-      .catch(err => {
-        console.error(err);
-        this.loading = false;
-      });
+      }
     }
   };
   </script>
